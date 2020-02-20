@@ -8,6 +8,7 @@ newparams = {'figure.figsize': (6.0, 6.0), 'axes.grid': True,
              'font.size': 14}
 plt.rcParams.update(newparams)
 
+# function to get configurationspace
 def config_space(l):
     r_max = np.sum(l)
     l_max = np.max(l)
