@@ -241,7 +241,7 @@ thetas0_dict = {0: np.array([3/2, 1/2, 1/2])*np.pi, 1: np.array([3/2, 0, 0]) * n
 for i in range(4):
     l = l_dict[i]
     p = p_dict[i]
-    thetas0 =thetas0_dict[i]
+    thetas0 = thetas0_dict[i]
     print("Case: ", i + 1)
     print("l: ", l)
     print("p: ", p)
@@ -250,4 +250,19 @@ for i in range(4):
     Plot(l, thetas_list[-1], p, i + 1, num=str(i+1))
     print_thetas(thetas_list[-1])
     print("---------------------------------------")
+
+# A special case discussed in the theory
+# There is a saddle point which the robot arm gets stuck in
+l = [3, 2, 2]
+p = [1, 2]
+thetas0 = [3728, 0, np.pi]  # [x, 0, pi], for x in |R
+print("Case: 6")
+print("l: ", l)
+print("p: ", p)
+thetas_list, count = GaussNewton(l, p, thetas0)
+print("Converged in ", count, "iterations")
+Plot(l, thetas_list[-1], p, 5, num=str(5))
+print_thetas(thetas_list[-1])
+print("---------------------------------------")
+
 plt.show()
