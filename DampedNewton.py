@@ -387,7 +387,7 @@ def run_special_case(save=False):
 
 "run code"
 # save = True to save the plots
-save = True
+save = False
 run_test_cases(save=save)
 run_special_case(save=save)
 plt.show()
