@@ -273,39 +273,57 @@ def print_thetas(thetas):
     print("Thetas:", thetas / np.pi, "* pi")
 
 
-l_dict = {0: [3, 2, 2], 1: [1, 4, 1], 2: [3, 2, 1, 1], 3: [3, 2, 1, 1]}
-p_dict = {0: [3, 2], 1: [1, 1], 2: [3, 2], 3: [0, 0]}
-thetas0_dict = {0: np.array([3/2, 1/2, 1/2])*np.pi, 1: np.array([4/5, 4/5, 4/5]) * np.pi,
-                2: np.array([0.8, 0.6, 0.6, 0.5]) * np.pi, 3: np.array([3/2, 1/2, 1/2, 1/2]) * np.pi}
 
-#0.80089218 0.64076372 0.61571798 0.50032875
-#1.80234842, 1.2842212,  0.65702182, 1.95688468
-for i in range(4):
-    l = l_dict[i]
-    p = p_dict[i]
-    thetas0 = thetas0_dict[i]
-    print("Case:", i + 1)
+def run_test_cases(save=False):
+    l_dict = {0: [3, 2, 2], 1: [1, 4, 1], 2: [3, 2, 1, 1], 3: [3, 2, 1, 1]}
+    p_dict = {0: [3, 2], 1: [1, 1], 2: [3, 2], 3: [0, 0]}
+    thetas0_dict = {0: np.array([3/2, 1/2, 1/2])*np.pi, 1: np.array([4/5, 4/5, 4/5]) * np.pi,
+                    2: np.array([0.80089218, 0.64076372, 0.61571798, 0.50032875]) * np.pi,
+                    3: np.array([3/2, 1/2, 1/2, 1/2]) * np.pi}
+
+    # Number after "2:" are choosen by running the code once and taking the last thetas0 for New thetas0.
+    # 0.80089218 0.64076372 0.61571798 0.50032875
+    # 1.80234842, 1.2842212,  0.65702182, 1.95688468
+
+
+
+    for i in range(4):
+        l = l_dict[i]
+        p = p_dict[i]
+        thetas0 = thetas0_dict[i]
+        print("Case:", i + 1)
+        print("l:", l)
+        print("p:", p)
+        thetas_list, count = DampedNewton(l, p, thetas0)
+        print("Converged in", count, "iterations")
+        Plot(l, thetas_list[-1], p, i + 1, num=str(i+1), save=save)
+        print_thetas(thetas_list[-1])
+        Plot_convergence(l, thetas_list, p, i + 1, num=str(i+1), save=save)
+        print("---------------------------------------")
+
+
+
+
+# A special case discussed in the theory
+# There is a saddle point which the robot arm gets stuck in
+def run_special_case(save=False):
+    l = [3, 2, 2]
+    p = [1, 0.5]  # Somewhere along the first l
+    thetas0 = np.array([2.07111284, 0, np.pi])  # [x, 0, pi], for x in |R 2.07111284 + n*2pi = 2728
+    print("Case: 5")
     print("l:", l)
     print("p:", p)
     thetas_list, count = DampedNewton(l, p, thetas0)
     print("Converged in", count, "iterations")
-    Plot(l, thetas_list[-1], p, i + 1, num=str(i+1))
+    Plot(l, thetas_list[-1], p, 5, num=str(5), save=save)
     print_thetas(thetas_list[-1])
-    Plot_convergence(l, thetas_list, p, i + 1, num=str(i+1))
+    Plot_convergence(l, thetas_list, p, 5, num=str(5), save=save)
     print("---------------------------------------")
 
-# A special case discussed in the theory
-# There is a saddle point which the robot arm gets stuck in
-l = [3, 2, 2]
-p = [1, 0.5]  # Somewhere along the first l
-thetas0 = np.array([2.07111284, 0, np.pi])  # [x, 0, pi], for x in |R 2.07111284 + n*2pi = 2728
-print("Case: 5")
-print("l:", l)
-print("p:", p)
-thetas_list, count = DampedNewton(l, p, thetas0)
-print("Converged in", count, "iterations")
-Plot(l, thetas_list[-1], p, 5, num=str(5))
-print_thetas(thetas_list[-1])
-print("---------------------------------------")
 
+"run code"
+# save = True to save the plots
+save = False
+run_test_cases(save=save)
+run_special_case(save=save)
 plt.show()
