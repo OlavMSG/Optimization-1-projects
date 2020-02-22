@@ -319,7 +319,7 @@ def run_test_cases(save=False):
         plt.savefig("Robot" + "caseplot" + ".pdf", bbox_inches='tight')
 
     #  convergence plots
-    fig2 = plt.figure(num="convplot", figsize=(13.5, 5), dpi=100)
+    fig2 = plt.figure(num="convplot", figsize=(13.5, 6), dpi=100)
     fig2.suptitle("", fontsize=20)
     ax21 = fig2.add_subplot(2, 2, 1)
     ax22 = fig2.add_subplot(2, 2, 2)
@@ -388,6 +388,6 @@ def run_special_case(save=False):
 "run code"
 # save = True to save the plots
 save = True
-#run_test_cases(save=save)
+run_test_cases(save=save)
 run_special_case(save=save)
 plt.show()
