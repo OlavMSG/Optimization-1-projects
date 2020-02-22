@@ -51,7 +51,7 @@ def Plot(l, thetas, p, case, save=False, num="0"):
 
     dist = np.linalg.norm(np.array([x[-1], y[-1]]) - p)
     print("Minimal distance from Robot arm end to p:", min_dist)
-    print("Robot arm end to p:", dist)
+    print("Length of end from robot arm to p:", dist)
     epsilon = 2e-15
     if min_dist - epsilon <= dist <= min_dist + epsilon:
         print("Minimum is reached.")
@@ -59,7 +59,7 @@ def Plot(l, thetas, p, case, save=False, num="0"):
     fig, ax = plt.subplots(1, 1, num="Robot " + num, figsize=(8, 8))
     ax.plot(x, y, "b-o", label="Robot")
     ax.plot(x[-1], y[-1], "r.", label="Robot arm end")
-    ax.plot(p[0], p[1], "rx", label="p : (" + "{:.0f}".format(p[0]) + "," + "{:.0f}".format(p[1]) + ")")
+    ax.plot(p[0], p[1], "rx", label="$p = (" + "{:.0f}".format(p[0]) + "," + "{:.0f}".format(p[1]) + ")$")
     ax.fill_between(x_conf, y_conf_up, y_conf_low, label="Configuration space", color='g')
     ax.fill_between(x_conf, - y_conf_up, - y_conf_low, color='g')
 
@@ -67,7 +67,7 @@ def Plot(l, thetas, p, case, save=False, num="0"):
     ax.set_ylim(-1.02 * r_max, 1.02 * r_max)
 
     ax.set_title("Robot position, Case: " + "{:.0f}".format(case)
-                 + "\n" + "Robot arm end to p: " + "{:.4f}".format(dist))
+                 + "\n" + "Length from end of robot arm to p: " + "{:.4f}".format(dist))
     ax.set_xlabel("$x$")
     ax.set_ylabel("$y$")
     ax.grid(True)
@@ -88,6 +88,7 @@ def get_conv_to_plot(l ,thetas_list, p):
         dist.append(np.linalg.norm(arm_end - p))
     dist = np.asarray(dist)
     return dist
+
 
 def Plot_convergence(l, thetas_list, p, case, save=False, num="0"):
     dist = get_conv_to_plot(l, thetas_list, p)
@@ -122,7 +123,6 @@ def del2_r1(l, thetas, k1, k2):
     n = len(l)
     s = max(k1, k2)
     return - np.sum([l[i] * np.cos(np.sum(thetas[:i + 1])) for i in range(s, n)])
-
 
 
 def r2(l, thetas, p2):
@@ -220,7 +220,6 @@ def searchDirection(gk, Hk, epsilon=1e-8):
     return pk
 
 
-
 def DampedNewton(l, p, thetas0, tol=1e-10, nmax=1000, nmaxls=100,
                 c1=1e-4, c2=0.9, rho=2, epsilon=1e-8):
 
@@ -250,7 +249,7 @@ def DampedNewton(l, p, thetas0, tol=1e-10, nmax=1000, nmaxls=100,
         count += 1
 
         if norm(gk) < tol:
-            eigval= eig(Hk.toarray())[0]
+            eigval = eig(Hk.toarray())[0]
             min_eigval = np.min(eigval)
             max_eigval = np.max(eigval)
             if min_eigval < 0 < max_eigval:  # converged to a saddle point
@@ -273,18 +272,16 @@ def print_thetas(thetas):
     print("Thetas:", thetas / np.pi, "* pi")
 
 
-
 def run_test_cases(save=False):
     l_dict = {0: [3, 2, 2], 1: [1, 4, 1], 2: [3, 2, 1, 1], 3: [3, 2, 1, 1]}
     p_dict = {0: [3, 2], 1: [1, 1], 2: [3, 2], 3: [0, 0]}
-    thetas0_dict = {0: np.array([3/2, 1/2, 1/2])*np.pi, 1: np.array([4/5, 4/5, 4/5]) * np.pi,
+    thetas0_dict = {0: np.array([3/2, 1/2, 1/2]) * np.pi, 1: np.array([4/5, 4/5, 4/5]) * np.pi,
                     2: np.array([0.80089218, 0.64076372, 0.61571798, 0.50032875]) * np.pi,
                     3: np.array([3/2, 1/2, 1/2, 1/2]) * np.pi}
 
     # Number after "2:" are choosen by running the code once and taking the last thetas0 for New thetas0.
     # 0.80089218 0.64076372 0.61571798 0.50032875
     # 1.80234842, 1.2842212,  0.65702182, 1.95688468
-
 
 
     for i in range(4):
@@ -300,8 +297,6 @@ def run_test_cases(save=False):
         print_thetas(thetas_list[-1])
         Plot_convergence(l, thetas_list, p, i + 1, num=str(i+1), save=save)
         print("---------------------------------------")
-
-
 
 
 # A special case discussed in the theory
