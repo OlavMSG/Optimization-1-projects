@@ -8,7 +8,7 @@ newparams = {'figure.figsize': (6.0, 6.0), 'axes.grid': True,
              'font.size': 14}
 plt.rcParams.update(newparams)
 
-# function to get configurationspace
+# function to get configuration space
 def config_space(l):
     r_max = np.sum(l)
     l_max = np.max(l)
@@ -24,8 +24,8 @@ def get_config_space_to_plot(r_max, r_min, p, N=1000):
     if r_min > 0:
         arg_low = np.argwhere(np.abs(x_conf) <= r_min).flatten()
         y_conf_low[arg_low] = np.sqrt(r_min ** 2 - x_conf[arg_low] ** 2)
-        lenth_p = np.linalg.norm(p)
-        min_dist = r_min - lenth_p
+        length_p = np.linalg.norm(p)
+        min_dist = r_min - length_p
         print("Not possible to reach p.")
     return x_conf, y_conf_up, y_conf_low, min_dist
 
@@ -44,15 +44,14 @@ def get_xy_to_plot(l, thetas):
     return x, y
 
 
-
 def Plot(l, thetas, p, case, save=False, num="0"):
     x, y = get_xy_to_plot(l, thetas)
     r_min, r_max = config_space(l)
     x_conf, y_conf_up, y_conf_low, min_dist = get_config_space_to_plot(r_max, r_min, p)
 
     dist = np.linalg.norm(np.array([x[-1], y[-1]]) - p)
-    print("Minimal distance from Robot arm end to p: ", min_dist)
-    print("Robot arm end to p: ", dist)
+    print("Minimal distance from Robot arm end to p:", min_dist)
+    print("Robot arm end to p:", dist)
     epsilon = 2e-15
     if min_dist - epsilon <= dist <= min_dist + epsilon:
         print("Minimum is reached.")
@@ -61,7 +60,7 @@ def Plot(l, thetas, p, case, save=False, num="0"):
     ax.plot(x, y, "b-o", label="Robot")
     ax.plot(x[-1], y[-1], "r.", label="Robot arm end")
     ax.plot(p[0], p[1], "rx", label="p : (" + "{:.0f}".format(p[0]) + "," + "{:.0f}".format(p[1]) + ")")
-    ax.fill_between(x_conf, y_conf_up, y_conf_low, label="Configurationspace", color='g')
+    ax.fill_between(x_conf, y_conf_up, y_conf_low, label="Configuration space", color='g')
     ax.fill_between(x_conf, - y_conf_up, - y_conf_low, color='g')
 
     ax.set_xlim(-1.02 * r_max, 1.02 * r_max)
@@ -229,8 +228,8 @@ def GaussNewton(l, p, thetas0, tol=1e-8, nmax=1000, nmaxls=100,
 
 
 def print_thetas(thetas):
-    print("Thetas: ", thetas)
-    print("Thetas: ", thetas / np.pi, " * pi")
+    print("Thetas:", thetas)
+    print("Thetas:", thetas / np.pi, "* pi")
 
 
 l_dict = {0: [3, 2, 2], 1: [1, 4, 1], 2: [3, 2, 1, 1], 3: [3, 2, 1, 1]}
@@ -242,11 +241,11 @@ for i in range(4):
     l = l_dict[i]
     p = p_dict[i]
     thetas0 = thetas0_dict[i]
-    print("Case: ", i + 1)
-    print("l: ", l)
-    print("p: ", p)
+    print("Case:", i + 1)
+    print("l:", l)
+    print("p:", p)
     thetas_list, count = GaussNewton(l, p, thetas0)
-    print("Converged in ", count, "iterations")
+    print("Converged in", count, "iterations")
     Plot(l, thetas_list[-1], p, i + 1, num=str(i+1))
     print_thetas(thetas_list[-1])
     print("---------------------------------------")
@@ -254,13 +253,13 @@ for i in range(4):
 # A special case discussed in the theory
 # There is a saddle point which the robot arm gets stuck in
 l = [3, 2, 2]
-p = [1, 2]
+p = [1, 0.5]  # Somewhere along the first l
 thetas0 = [3728, 0, np.pi]  # [x, 0, pi], for x in |R
-print("Case: 6")
-print("l: ", l)
-print("p: ", p)
+print("Case: 5")
+print("l:", l)
+print("p:", p)
 thetas_list, count = GaussNewton(l, p, thetas0)
-print("Converged in ", count, "iterations")
+print("Converged in", count, "iterations")
 Plot(l, thetas_list[-1], p, 5, num=str(5))
 print_thetas(thetas_list[-1])
 print("---------------------------------------")
