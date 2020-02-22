@@ -56,7 +56,7 @@ def Plot(l, thetas, p, case, save=False, num="0"):
     if min_dist - epsilon <= dist <= min_dist + epsilon:
         print("Minimum is reached.")
 
-    fig, ax = plt.subplots(1, 1, num="Robot " + num)
+    fig, ax = plt.subplots(1, 1, num="Robot " + num, figsize=(8, 8))
     ax.plot(x, y, "b-o", label="Robot")
     ax.plot(x[-1], y[-1], "r.", label="Robot arm end")
     ax.plot(p[0], p[1], "rx", label="p : (" + "{:.0f}".format(p[0]) + "," + "{:.0f}".format(p[1]) + ")")
@@ -78,6 +78,33 @@ def Plot(l, thetas, p, case, save=False, num="0"):
     # Set to "save" to True to save the plot
     if save:
         plt.savefig("Robot" + num + ".pdf", bbox_inches='tight')
+
+
+def get_conv_to_plot(l ,thetas_list, p):
+    dist = []
+    for thetas in thetas_list:
+        x, y = get_xy_to_plot(l, thetas)
+        arm_end = np.array([x[-1], y[-1]])
+        dist.append(np.linalg.norm(arm_end - p))
+    dist = np.asarray(dist)
+    return dist
+
+def Plot_convergence(l, thetas_list, p, case, save=False, num="0"):
+    dist = get_conv_to_plot(l, thetas_list, p)
+    fig, ax = plt.subplots(1, 1, num="Conv " + num, figsize=(8, 5))
+    ax.semilogy(dist, "b-o", label="$\|F(\\vartheta) - p \|$")
+
+    ax.set_title("Convergence rate, Case: " + "{:.0f}".format(case))
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("$\|F(\\vartheta) - p \|$")
+    ax.grid(True)
+    # legend
+    # asking matplotlib for the plotted objects and their labels
+    lines, labels = ax.get_legend_handles_labels()
+    ax.legend(lines, labels, loc=9, bbox_to_anchor=(0.9, 1.135), ncol=2)
+    # Set to "save" to True to save the plot
+    if save:
+        plt.savefig("Conv" + num + ".pdf", bbox_inches='tight')
 
 
 def r1(l, thetas, p1):
@@ -248,9 +275,11 @@ def print_thetas(thetas):
 
 l_dict = {0: [3, 2, 2], 1: [1, 4, 1], 2: [3, 2, 1, 1], 3: [3, 2, 1, 1]}
 p_dict = {0: [3, 2], 1: [1, 1], 2: [3, 2], 3: [0, 0]}
-thetas0_dict = {0: np.array([3/2, 1/2, 1/2])*np.pi, 1: np.array([1/2, 1/2, 1/2]) * np.pi,
-                2: np.array([3/2, 1/2, 1/2, 1/2]) * np.pi, 3: np.array([3/2, 1/2, 1/2, 1/2]) * np.pi}
+thetas0_dict = {0: np.array([3/2, 1/2, 1/2])*np.pi, 1: np.array([4/5, 4/5, 4/5]) * np.pi,
+                2: np.array([0.8, 0.6, 0.6, 0.5]) * np.pi, 3: np.array([3/2, 1/2, 1/2, 1/2]) * np.pi}
 
+#0.80089218 0.64076372 0.61571798 0.50032875
+#1.80234842, 1.2842212,  0.65702182, 1.95688468
 for i in range(4):
     l = l_dict[i]
     p = p_dict[i]
@@ -262,6 +291,7 @@ for i in range(4):
     print("Converged in", count, "iterations")
     Plot(l, thetas_list[-1], p, i + 1, num=str(i+1))
     print_thetas(thetas_list[-1])
+    Plot_convergence(l, thetas_list, p, i + 1, num=str(i+1))
     print("---------------------------------------")
 
 # A special case discussed in the theory
