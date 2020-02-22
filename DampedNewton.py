@@ -65,7 +65,7 @@ def Plot(ax, l, thetas, p):
 
     ax.plot(x, y, "b-o", label="Robot")
     ax.plot(x[-1], y[-1], "r.", label="End of robot arm")
-    ax.plot(p[0], p[1], "rx", label="$p=(" + get_string(p) + ")$")
+    ax.plot(p[0], p[1], "rx", label="$p$")
     ax.fill_between(x_conf, y_conf_up, y_conf_low, label="Configuration space", color='g')
     ax.fill_between(x_conf, - y_conf_up, - y_conf_low, color='g')
 
@@ -73,15 +73,11 @@ def Plot(ax, l, thetas, p):
     ax.set_ylim(-1.02 * r_max, 1.02 * r_max)
     l_string = ""
 
-    ax.set_title("Robot position, $\ell=(" + get_string(l) + ")$,"
-                 + "\n" +" Length from end of robot arm to $p$: " + "{:.4f}".format(dist))
+    ax.set_title("$\ell=(" + get_string(l) + ")$, $p=(" + get_string(p) + ")$,"
+                 + " $\|F(\\vartheta) - p \|=" + "{:.4f}".format(dist) + "$")
     ax.set_xlabel("$x$")
     ax.set_ylabel("$y$")
     ax.grid(True)
-    # legend
-    # asking matplotlib for the plotted objects and their labels
-    lines, labels = ax.get_legend_handles_labels()
-    ax.legend(lines, labels, loc=9, bbox_to_anchor=(0.50, -0.07), ncol=2)
 
     return ax
 
@@ -99,14 +95,10 @@ def get_conv_to_plot(l ,thetas_list, p):
 def Plot_convergence(ax, l, thetas_list, p):
     dist = get_conv_to_plot(l, thetas_list, p)
     ax.semilogy(dist, "b-*", label="$\|F(\\vartheta) - p \|$")
-    ax.set_title("Convergence rate, $\ell=(" + get_string(l) + ")$, $p=(" + get_string(p) + ")$")
+    ax.set_title("$\ell=(" + get_string(l) + ")$, $p=(" + get_string(p) + ")$")
     ax.set_xlabel("Iterations")
     ax.set_ylabel("$\|F(\\vartheta) - p \|$")
     ax.grid(True)
-    # legend
-    # asking matplotlib for the plotted objects and their labels
-    lines, labels = ax.get_legend_handles_labels()
-    ax.legend(lines, labels, loc=9, bbox_to_anchor=(0.9, -0.135), ncol=2)
 
     return ax
 
@@ -293,7 +285,7 @@ def run_test_cases(save=False):
     thetas_list_dict = {}
 
     #  Case plots
-    fig1 = plt.figure(num="caseplot", figsize=(10.5, 10.5), dpi=100)
+    fig1 = plt.figure(num="caseplot", figsize=(18.5, 6), dpi=100)
     fig1.suptitle("", fontsize=20)
     ax11 = fig1.add_subplot(2, 2, 1)
     ax12 = fig1.add_subplot(2, 2, 2)
@@ -317,13 +309,17 @@ def run_test_cases(save=False):
         axs1[i] = Plot(axs1[i], l, thetas_list[-1], p)
         thetas_list_dict[i] = thetas_list
         print("---------------------------------------")
-
+    # legend
+    # asking matplotlib for the plotted objects and their labels
+    lines, labels = ax14.get_legend_handles_labels()
+    ax13.legend(lines, labels, loc=9, bbox_to_anchor=(1.15, -0.11), ncol=4)
+    plt.subplots_adjust(hspace=0.45, wspace=0.3)
     # Set to "save" to True to save the plot
     if save:
         plt.savefig("Robot" + "caseplot" + ".pdf", bbox_inches='tight')
 
     #  convergence plots
-    fig2 = plt.figure(num="convplot", figsize=(10.5, 5), dpi=100)
+    fig2 = plt.figure(num="convplot", figsize=(13.5, 5), dpi=100)
     fig2.suptitle("", fontsize=20)
     ax21 = fig2.add_subplot(2, 2, 1)
     ax22 = fig2.add_subplot(2, 2, 2)
@@ -336,7 +332,11 @@ def run_test_cases(save=False):
         p = p_dict[i]
         thetas_list = thetas_list_dict[i]
         axs2[i] = Plot_convergence(axs2[i], l, thetas_list, p)
-
+    # legend
+    # asking matplotlib for the plotted objects and their labels
+    lines, labels = ax23.get_legend_handles_labels()
+    ax23.legend(lines, labels, loc=9, bbox_to_anchor=(1.15, -0.11), ncol=4)
+    plt.subplots_adjust(hspace=0.45, wspace=0.3)
     # Set to "save" to True to save the plot
     if save:
         plt.savefig("Robot" + "convplot" + ".pdf", bbox_inches='tight')
@@ -358,21 +358,25 @@ def run_special_case(save=False):
     print("Converged in", count, "iterations")
     print_thetas(thetas_list[-1])
 
-    fig3 = plt.figure(num="case5plot", figsize=(5.3, 5.3), dpi=100)
+    fig3 = plt.figure(num="case5plot", figsize=(12, 6), dpi=100)
     fig3.suptitle("", fontsize=20)
     ax3 = fig3.add_subplot(1, 1, 1)
     ax3 = Plot(ax3, l,  thetas_list[-1], p)
-    ax3.legend(loc=9, bbox_to_anchor=(0.50, -0.141), ncol=2)
+    lines, labels = ax3.get_legend_handles_labels()
+    ax3.legend(lines, labels, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=4)
+    plt.subplots_adjust(hspace=0.45, wspace=0.3)
 
     # Set to "save" to True to save the plot
     if save:
         plt.savefig("Robot" + "case5plot" + ".pdf", bbox_inches='tight')
 
-    fig4 = plt.figure(num="case5convplot", figsize=(5.5, 3), dpi=100)
+    fig4 = plt.figure(num="case5convplot", figsize=(12, 3), dpi=100)
     fig4.suptitle("", fontsize=20)
     ax4 = fig4.add_subplot(1, 1, 1)
     ax4 = Plot_convergence(ax4, l, thetas_list, p)
-    ax4.legend( loc=9, bbox_to_anchor=(0.9, -0.12), ncol=2)
+    lines, labels = ax4.get_legend_handles_labels()
+    ax4.legend(lines, labels, loc=9, bbox_to_anchor=(0.85, 1.22), ncol=4)
+    plt.subplots_adjust(hspace=0.45, wspace=0.3)
 
     print("---------------------------------------")
 
@@ -384,6 +388,6 @@ def run_special_case(save=False):
 "run code"
 # save = True to save the plots
 save = True
-run_test_cases(save=save)
+#run_test_cases(save=save)
 run_special_case(save=save)
 plt.show()
