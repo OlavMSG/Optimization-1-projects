@@ -246,18 +246,19 @@ def DampedNewton(l, p, thetas0, tol=1e-10, nmax=1000, nmaxls=100,
         count += 1
 
         if norm(gk) < tol:
-            eigval= eig(Hk.toarray())[0]
-            min_eigval = np.min(eigval)
-            max_eigval = np.max(eigval)
-            if min_eigval < 0 < max_eigval:  # converged to a saddle point
-                print("Converged to å saddle point, trying with new initial values.")
-                # try new thetas0
-                thetas0 = thetas_0_2pi(thetas0 + np.random.rand(len(thetas0)))  # Get new initial guess away form old
-                print("New thetas0: ", thetas0 / np.pi, " * pi")
-                thetas_k_list2, count2 = DampedNewton(l, p, thetas0, nmax=nmax-count)
-                for i in range(len(thetas_k_list2)):
-                    thetas_k_list.append(thetas_k_list2[i])
-                count += count2
+            if len(l) <= 5: # the problem is small enough, run test
+                eigval= eig(Hk.toarray())[0]
+                min_eigval = np.min(eigval)
+                max_eigval = np.max(eigval)
+                if min_eigval < 0 < max_eigval:  # converged to a saddle point
+                    print("Converged to å saddle point, trying with new initial values.")
+                    # try new thetas0
+                    thetas0 = thetas_0_2pi(thetas0 + np.random.rand(len(thetas0)))  # Get new initial guess away form old
+                    print("New thetas0: ", thetas0 / np.pi, " * pi")
+                    thetas_k_list2, count2 = DampedNewton(l, p, thetas0, nmax=nmax-count)
+                    for i in range(len(thetas_k_list2)):
+                        thetas_k_list.append(thetas_k_list2[i])
+                    count += count2
             break
 
     thetas_k_list = np.asarray(thetas_k_list)
@@ -349,7 +350,7 @@ def run_test_cases(save=False):
 def run_special_case(save=False):
     l = [3, 2, 2]
     p = [1, 0.5]  # Somewhere along the first l
-    thetas0 = np.array([2.07111284, 0, np.pi])  # [x, 0, pi], for x in |R 2.07111284 + n*2pi = 2728
+    thetas0 = np.array([2728, 0, np.pi])  # [x, 0, pi], for x in |R \ 2728
     print("---------------------------------------")
     print("Case: 5")
     print("l:", l)
@@ -385,9 +386,52 @@ def run_special_case(save=False):
         plt.savefig("Robot" + "case5convplot" + ".pdf", bbox_inches='tight')
 
 
+# A special case discussed in the theory
+# There is a saddle point which the robot arm gets stuck in
+def run_big_case(size, nmax=1000, save=False):
+    l = np.random.randint(low=1, high=5, size=size)
+    p = np.random.randint(low=0, high=7, size=2)
+    thetas0 = 2 * np.pi * np.random.rand(size) # [x, 0, pi], for x in |R \ 2728
+    print("---------------------------------------")
+    print("Case: 6")
+    print("l:", l)
+    print("p:", p)
+    thetas_list, count = DampedNewton(l, p, thetas0, nmax=nmax)
+    print("Converged in", count, "iterations")
+    print_thetas(thetas_list[-1])
+
+    fig3 = plt.figure(num="case6plot", figsize=(12, 6), dpi=100)
+    fig3.suptitle("", fontsize=20)
+    ax3 = fig3.add_subplot(1, 1, 1)
+    ax3 = Plot(ax3, l,  thetas_list[-1], p)
+    lines, labels = ax3.get_legend_handles_labels()
+    ax3.legend(lines, labels, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=4)
+    plt.subplots_adjust(hspace=0.45, wspace=0.3)
+
+    # Set to "save" to True to save the plot
+    if save:
+        plt.savefig("Robot" + "case6plot" + ".pdf", bbox_inches='tight')
+
+    fig4 = plt.figure(num="case6convplot", figsize=(12, 3), dpi=100)
+    fig4.suptitle("", fontsize=20)
+    ax4 = fig4.add_subplot(1, 1, 1)
+    ax4 = Plot_convergence(ax4, l, thetas_list, p)
+    lines, labels = ax4.get_legend_handles_labels()
+    ax4.legend(lines, labels, loc=9, bbox_to_anchor=(0.85, 1.22), ncol=4)
+    plt.subplots_adjust(hspace=0.45, wspace=0.3)
+
+    print("---------------------------------------")
+
+    # Set to "save" to True to save the plot
+    if save:
+        plt.savefig("Robot" + "case6convplot" + ".pdf", bbox_inches='tight')
+
+
+
 "run code"
 # save = True to save the plots
 save = False
-run_test_cases(save=save)
-run_special_case(save=save)
+#run_test_cases(save=save)
+#run_special_case(save=save)
+run_big_case(5, nmax=1000)
 plt.show()
