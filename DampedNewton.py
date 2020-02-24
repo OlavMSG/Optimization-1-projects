@@ -74,7 +74,7 @@ def Plot(ax, l, thetas, p):
     l_string = ""
 
     ax.set_title("$\ell=(" + get_string(l) + ")$, $p=(" + get_string(p) + ")$,"
-                 + " $\|F(\\vartheta) - p \|=" + "{:.4f}".format(dist) + "$")
+                 + " $\|\|F(\\vartheta) - p \|\|_2=" + "{:.4f}".format(dist) + "$")
     ax.set_xlabel("$x$")
     ax.set_ylabel("$y$")
     ax.grid(True)
@@ -94,10 +94,10 @@ def get_conv_to_plot(l ,thetas_list, p):
 
 def Plot_convergence(ax, l, thetas_list, p):
     dist = get_conv_to_plot(l, thetas_list, p)
-    ax.semilogy(dist, "b-*", label="$\|F(\\vartheta) - p \|$")
+    ax.semilogy(dist, "b-*", label="$\|\|F(\\vartheta) - p \|\|_2$")
     ax.set_title("$\ell=(" + get_string(l) + ")$, $p=(" + get_string(p) + ")$")
     ax.set_xlabel("Iterations")
-    ax.set_ylabel("$\|F(\\vartheta) - p \|$")
+    ax.set_ylabel("$\|\|F(\\vartheta) - p \|\|_2$")
     ax.grid(True)
 
     return ax
@@ -431,7 +431,7 @@ def run_big_case(size, nmax=1000, save=False):
 "run code"
 # save = True to save the plots
 save = False
-#run_test_cases(save=save)
-#run_special_case(save=save)
+run_test_cases(save=save)
+run_special_case(save=save)
 run_big_case(5, nmax=1000)
 plt.show()
